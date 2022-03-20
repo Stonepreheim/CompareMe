@@ -1,6 +1,6 @@
-package org.jetbrains.plugins.template.services
+package com.github.stonepreheim.compareme.services
 
-import org.jetbrains.plugins.template.MyBundle
+import com.github.stonepreheim.compareme.MyBundle
 
 class MyApplicationService {
 
