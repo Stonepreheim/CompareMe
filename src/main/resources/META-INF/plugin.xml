@@ -16,11 +16,12 @@
                 class="com.github.stonepreheim.compareme.actions.GetMetricsForFile" text="Get File Metrics"
                 description="opens comparison extension with current file in scope">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="CompareFileWithEditor"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="CompareClipboardWithSelection"/>
         </action>
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="A Fantastic File Metric Plugin Made By 3 Idiots" secondary="true" icon="AllIcons.General.Modified" anchor="bottom"
+        <toolWindow id="MetricsWindow" secondary="true" icon="AllIcons.General.Modified" anchor="bottom"
                     factoryClass="com.github.stonepreheim.compareme.extensions.FileMetricWindowFactory"/>
     </extensions>
 

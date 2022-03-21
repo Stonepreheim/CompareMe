@@ -14,16 +14,7 @@ public class FileMetricWindow {
     public FileMetricWindow( ToolWindow aToolWindowThatIsReferencedFromTheFileMetricWindowFactory ) {
 
         theToolWindowThisFileMetricWindowIsBoundTo = aToolWindowThatIsReferencedFromTheFileMetricWindowFactory;
-
-    }
-
-    public void showWindow( boolean shouldTheWindowThatHoldsThisFileMetricWindowBeShown ) {
-
-        if( shouldTheWindowThatHoldsThisFileMetricWindowBeShown )
-            theToolWindowThisFileMetricWindowIsBoundTo.show(null);
-        else
-            theToolWindowThisFileMetricWindowIsBoundTo.hide(null);
-
+        theToolWindowThisFileMetricWindowIsBoundTo.hide();
     }
 
     public JPanel getContent() { return FileMetricWindowContent; }
