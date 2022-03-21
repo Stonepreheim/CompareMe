@@ -8,9 +8,12 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.ArrayList;
 
 public class Metrics {
     private int lineCount = 0;
+    private int methodCount = 0;
+    private ArrayList<String> methodNames = new ArrayList<>();
 
     public void startMetrics(AnActionEvent event) {
         Project project = event.getProject();
@@ -21,25 +24,38 @@ public class Metrics {
         String fileName = currentFile.getPath();
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-            while (br.readLine() != null) {
-                countLines();
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                lineCount++;
+
+                if (line.contains("{")) {
+                    methodCount++;
+                    addMethodName(line);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        int lineCount = getLineCount();
-
         String title = String.format("Project: %s", projectName);
-        String message = String.format("The number of lines in %s is %d", projectName, lineCount);
+        String message = String.format("The number of lines in %s is %d%nNumber of methods: %d%n%s",
+                projectName, lineCount, methodCount - 1, getMethodNames());
         Messages.showMessageDialog(project, message, title, Messages.getInformationIcon());
     }
 
-    public void countLines() {
-        lineCount++;
+    private void addMethodName(String methodCall) {
+        methodCall = methodCall.replace("{", "");
+        methodNames.add(methodCall);
     }
 
-    public int getLineCount() {
-        return lineCount;
+    private String getMethodNames() {
+        StringBuilder methodName = new StringBuilder();
+
+        for (int index = 1; index < methodNames.size(); index++) {
+            methodName.append(methodNames.get(index)).append("\n");
+        }
+
+        return methodName.toString();
     }
 }
