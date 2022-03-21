@@ -13,4 +13,10 @@
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
     </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="A Fantastic File Metric Plugin Made By 3 Idiots" secondary="true" icon="AllIcons.General.Modified" anchor="bottom"
+                    factoryClass="com.github.stonepreheim.compareme.extensions.FileMetricWindowFactory"/>
+    </extensions>
+
 </idea-plugin>
