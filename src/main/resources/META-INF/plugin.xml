@@ -13,4 +13,8 @@
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
     </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="com.github.stonepreheim.compareme.services.Metrics"/>
+    </extensions>
 </idea-plugin>
