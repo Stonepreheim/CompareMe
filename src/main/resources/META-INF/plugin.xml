@@ -12,5 +12,10 @@
                 description="SDK Action example">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
+        <action id="com.github.stonepreheim.compareme.actions.GetMetricsForFile"
+                class="com.github.stonepreheim.compareme.actions.GetMetricsForFile" text="Get File Metrics"
+                description="opens comparison extension with current file in scope">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="CompareFileWithEditor"/>
+        </action>
     </actions>
 </idea-plugin>
