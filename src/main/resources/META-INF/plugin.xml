@@ -8,8 +8,8 @@
 
     <actions>
         <action id="com.github.stonepreheim.compareme.actions.PopupDialogAction"
-                class="com.github.stonepreheim.compareme.actions.PopupDialogAction" text="Test Popup Action"
-                description="SDK Action example">
+                class="com.github.stonepreheim.compareme.actions.PopupDialogAction" text="Test Metrics Service"
+                description="Testing for metrics action">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
         <action id="com.github.stonepreheim.compareme.actions.GetMetricsForFile"
