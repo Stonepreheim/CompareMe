@@ -11,9 +11,11 @@ import java.io.FileReader;
 import java.util.ArrayList;
 
 public class Metrics {
-    private int lineCount = 0;
-    private int methodCount = 0;
+    private int lineCount = 0, methodCount = 0;
     private ArrayList<String> methodNames = new ArrayList<>();
+
+    private final String[] dataTypes = {"byte", "short", "int", "long", "float", "double", "boolean", "char", "String"};
+    private final String[] memberTypes = {"private", "protected", "public", "package"};
 
     public void startMetrics(AnActionEvent event) {
         Project project = event.getProject();
@@ -28,10 +30,27 @@ public class Metrics {
 
             while ((line = br.readLine()) != null) {
                 lineCount++;
+                boolean isMethod = false;
 
                 if (line.contains("{")) {
-                    methodCount++;
-                    addMethodName(line);
+                    if (line.contains("(")) {
+                        if (line.contains("class")) {
+                            continue;
+                        }
+                        else {
+                            for (String memberType : memberTypes) {
+                                if (line.contains(memberType)) {
+                                    isMethod = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (isMethod) {
+                        methodCount++;
+                        addMethodName(line);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -40,7 +59,7 @@ public class Metrics {
 
         String title = String.format("Project: %s", projectName);
         String message = String.format("The number of lines in %s is %d%nNumber of methods: %d%n%s",
-                projectName, lineCount, methodCount - 1, getMethodNames());
+                projectName, lineCount, methodCount, getMethodNames());
         Messages.showMessageDialog(project, message, title, Messages.getInformationIcon());
     }
 
