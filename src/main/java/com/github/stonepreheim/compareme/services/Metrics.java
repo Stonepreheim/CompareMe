@@ -9,20 +9,24 @@ import com.intellij.openapi.vfs.VirtualFile;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Metrics {
-    private int lineCount = 0, methodCount = 0;
+    private int lineCount = 0, methodCount = 0, variableCount = 0;
     private ArrayList<String> methodNames = new ArrayList<>();
+    private ArrayList<String> variableNames = new ArrayList<>();
 
     private final String[] dataTypes = {"byte", "short", "int", "long", "float", "double", "boolean", "char", "String"};
     private final String[] memberTypes = {"private", "protected", "public", "package"};
 
     public void startMetrics(AnActionEvent event) {
         Project project = event.getProject();
+        assert project != null;
         String projectName = project.getName();
 
-        Document currentDoc = FileEditorManager.getInstance(project).getSelectedTextEditor().getDocument();
+        Document currentDoc = Objects.requireNonNull(FileEditorManager.getInstance(project).getSelectedTextEditor()).getDocument();
         VirtualFile currentFile = FileDocumentManager.getInstance().getFile(currentDoc);
+        assert currentFile != null;
         String fileName = currentFile.getPath();
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -30,7 +34,7 @@ public class Metrics {
 
             while ((line = br.readLine()) != null) {
                 lineCount++;
-                boolean isMethod = false;
+                boolean isMethod = false, isVariable = false;
 
                 if (line.contains("{")) {
                     if (line.contains("(")) {
@@ -46,11 +50,23 @@ public class Metrics {
                             }
                         }
                     }
-
-                    if (isMethod) {
-                        methodCount++;
-                        addMethodName(line);
+                }
+                else {
+                    for (String dataType : dataTypes) {
+                        if (line.contains(dataType)) {
+                            isVariable = true;
+                            break;
+                        }
                     }
+                }
+
+                if (isMethod) {
+                    methodCount++;
+                    addMethodName(line);
+                }
+                else if (isVariable) {
+                    variableCount++;
+                    addVariableName(line);
                 }
             }
         } catch (Exception e) {
@@ -58,9 +74,12 @@ public class Metrics {
         }
 
         String title = String.format("Project: %s", projectName);
-        String message = String.format("The number of lines in %s is %d%nNumber of methods: %d%n%s",
-                projectName, lineCount, methodCount, getMethodNames());
+        String message = String.format("The number of lines in %s is %d%nNumber of methods: %d%n%s%n Number of" +
+                        " variables: %d%n%s",
+                projectName, lineCount, methodCount, getMethodNames(), variableCount, getVariableNames());
         Messages.showMessageDialog(project, message, title, Messages.getInformationIcon());
+
+        resetMetrics();
     }
 
     private void addMethodName(String methodCall) {
@@ -68,13 +87,36 @@ public class Metrics {
         methodNames.add(methodCall);
     }
 
+    private void addVariableName(String variableCall) {
+        variableCall = variableCall.replace(";", "");
+        variableNames.add(variableCall);
+    }
+
     private String getMethodNames() {
         StringBuilder methodName = new StringBuilder();
 
-        for (int index = 1; index < methodNames.size(); index++) {
-            methodName.append(methodNames.get(index)).append("\n");
+        for (String name : methodNames) {
+            methodName.append(name).append("\n");
         }
 
         return methodName.toString();
+    }
+
+    private String getVariableNames() {
+        StringBuilder variableName = new StringBuilder();
+
+        for (int index = 1; index < variableNames.size(); index++) {
+            variableName.append(variableNames.get(index)).append("\n");
+        }
+
+        return variableName.toString();
+    }
+
+    private void resetMetrics() {
+        lineCount = 0;
+        methodCount = 0;
+        variableCount = 0;
+        methodNames = new ArrayList<>();
+        variableNames = new ArrayList<>();
     }
 }
