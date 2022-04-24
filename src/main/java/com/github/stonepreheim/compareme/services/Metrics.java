@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Metrics {
-    private int lineCount = 0, methodCount = 0, variableCount = 0;
+    private int lineCount = 0;
     private ArrayList<String> methodNames = new ArrayList<>();
     private ArrayList<String> variableNames = new ArrayList<>();
 
@@ -36,7 +36,10 @@ public class Metrics {
                 lineCount++;
                 boolean isMethod = false, isVariable = false;
 
-                if (line.contains("{")) {
+                if (line.contains("//")) {
+                    continue;
+                }
+                else if (line.contains("{")) {
                     if (line.contains("(")) {
                         if (line.contains("class")) {
                             continue;
@@ -53,7 +56,7 @@ public class Metrics {
                 }
                 else {
                     for (String dataType : dataTypes) {
-                        if (line.contains(dataType)) {
+                        if (line.contains(dataType) && !line.contains("\"")) {
                             isVariable = true;
                             break;
                         }
@@ -61,11 +64,9 @@ public class Metrics {
                 }
 
                 if (isMethod) {
-                    methodCount++;
                     addMethodName(line);
                 }
                 else if (isVariable) {
-                    variableCount++;
                     addVariableName(line);
                 }
             }
@@ -76,7 +77,7 @@ public class Metrics {
         String title = String.format("Project: %s", projectName);
         String message = String.format("The number of lines in %s is %d%nNumber of methods: %d%n%s%n Number of" +
                         " variables: %d%n%s",
-                projectName, lineCount, methodCount, getMethodNames(), variableCount, getVariableNames());
+                projectName, lineCount, methodNames.size(), getMethodNames(), variableNames.size(), getVariableNames());
         Messages.showMessageDialog(project, message, title, Messages.getInformationIcon());
 
         resetMetrics();
@@ -114,8 +115,6 @@ public class Metrics {
 
     private void resetMetrics() {
         lineCount = 0;
-        methodCount = 0;
-        variableCount = 0;
         methodNames = new ArrayList<>();
         variableNames = new ArrayList<>();
     }
