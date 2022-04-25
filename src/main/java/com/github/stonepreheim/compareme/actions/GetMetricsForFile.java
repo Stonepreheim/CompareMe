@@ -1,6 +1,8 @@
 package com.github.stonepreheim.compareme.actions;
 
+import com.github.stonepreheim.compareme.services.Metrics;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.ToolWindow;
@@ -22,6 +24,8 @@ public class GetMetricsForFile extends AnAction{
         window.show();
         AnAction showCompare = ActionManager.getInstance().getAction(IdeActions.ACTION_COMPARE_CLIPBOARD_WITH_SELECTION);
         showCompare.actionPerformed(e);
+        Metrics metricsService = ApplicationManager.getApplication().getService(Metrics.class);
+        metricsService.showMetrics(e);
     }
 
     @Override

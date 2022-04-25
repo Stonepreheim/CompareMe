@@ -8,12 +8,12 @@
 
     <actions>
         <action id="com.github.stonepreheim.compareme.actions.PopupDialogAction"
-                class="com.github.stonepreheim.compareme.actions.PopupDialogAction" text="Test Popup Action"
+                class="com.github.stonepreheim.compareme.actions.PopupDialogAction" text="Show Metrics Popup"
                 description="SDK Action example">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
         <action id="com.github.stonepreheim.compareme.actions.GetMetricsForFile"
-                class="com.github.stonepreheim.compareme.actions.GetMetricsForFile" text="Get File Metrics"
+                class="com.github.stonepreheim.compareme.actions.GetMetricsForFile" text="Show Dif and Metrics"
                 description="opens comparison extension with current file in scope">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="CompareFileWithEditor"/>
             <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="CompareClipboardWithSelection"/>
