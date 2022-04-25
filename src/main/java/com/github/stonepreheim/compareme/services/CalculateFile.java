@@ -6,12 +6,13 @@ public class CalculateFile {
     private int lineCount = 0;
     private ArrayList<String> methodNames = new ArrayList<>();
     private ArrayList<String> variableNames = new ArrayList<>();
+    private ArrayList<String> importNames = new ArrayList<>();
     private final String[] dataTypes = {"byte", "short", "int", "long", "float", "double", "boolean", "char", "String"};
     private final String[] memberTypes = {"private", "protected", "public", "package"};
 
     public void calculateMetrics(String line) {
         lineCount++;
-        boolean isMethod = false, isVariable = false;
+        boolean isMethod = false, isVariable = false, isImport = false;
 
         if (!line.contains("//")) {
             if (line.contains("{")) {
@@ -25,6 +26,9 @@ public class CalculateFile {
                         }
                     }
                 }
+            }
+            else if (line.contains("import")) {
+                isImport = true;
             }
             else {
                 for (String dataType : dataTypes) {
@@ -42,6 +46,9 @@ public class CalculateFile {
         else if (isVariable) {
             addVariableName(line);
         }
+        else if (isImport) {
+            addImportName(line);
+        }
     }
 
     private void addMethodName(String methodCall) {
@@ -54,6 +61,11 @@ public class CalculateFile {
         variableNames.add(variableCall);
     }
 
+    private void addImportName(String importCall) {
+        importCall = importCall.replace("{", "");
+        methodNames.add(importCall);
+    }
+
     public int getFileCount() {
         return lineCount;
     }
@@ -64,6 +76,10 @@ public class CalculateFile {
 
     public int getVariableCount() {
         return variableNames.size();
+    }
+
+    public int getImportCount() {
+        return importNames.size();
     }
 
     public String getMethodNames() {
@@ -84,6 +100,16 @@ public class CalculateFile {
         }
 
         return variableName.toString();
+    }
+
+    public String getImportNames() {
+        StringBuilder importName = new StringBuilder();
+
+        for (int index = 1; index < importNames.size(); index++) {
+            importName.append(importNames.get(index)).append("\n");
+        }
+
+        return importName.toString();
     }
 
     public void resetMetrics() {
