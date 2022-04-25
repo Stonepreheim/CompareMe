@@ -5,6 +5,7 @@ import com.intellij.openapi.wm.ToolWindow;
 import org.jdesktop.swingx.action.ActionManager;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.io.File;
 
 public class FileMetricWindow {
@@ -37,7 +38,9 @@ public class FileMetricWindow {
             FileSelectedLabel.setText("Selected file name: " + file.getName());
 
             Action myAction = ActionManager.getInstance().getAction(IdeActions.ACTION_COMPARE_CLIPBOARD_WITH_SELECTION);
-
+//            ActionEvent e = new ActionEvent();
+//            myAction.actionPerformed(e);
+            //need to create an action event somehow to trigger the compare window with
         }
 
     }
