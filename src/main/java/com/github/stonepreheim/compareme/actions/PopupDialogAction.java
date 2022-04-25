@@ -21,7 +21,7 @@ public class PopupDialogAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
         Metrics metricsService = ApplicationManager.getApplication().getService(Metrics.class);
-        metricsService.fileMetrics(event);
+        metricsService.showMetrics(event);
     }
 
     @Override

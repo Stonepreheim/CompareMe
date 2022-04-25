@@ -14,17 +14,14 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Metrics {
     private final CalculateFile CF = new CalculateFile();
     private final CalculateClip CC = new CalculateClip();
 
-    public void fileMetrics(AnActionEvent event) {
-        Project project = event.getProject();
-        assert project != null;
-        String projectName = project.getName();
-
+    private void fileMetrics(Project project) {
         Document currentDoc = Objects.requireNonNull(FileEditorManager.getInstance(project).getSelectedTextEditor()).getDocument();
         VirtualFile currentFile = FileDocumentManager.getInstance().getFile(currentDoc);
         assert currentFile != null;
@@ -40,20 +37,9 @@ public class Metrics {
         catch (Exception e) {
             System.out.println("Something went wrong");
         }
-
-        String title = String.format("Project: %s", projectName);
-        String message = String.format("The number of lines in %s is %d%nNumber of methods: %d%n%s%n Number of" +
-                        " variables: %d%n%s",
-                projectName, CF.getFileCount(), CF.getMethodCount(), CF.getMethodNames(),
-                CF.getVariableCount(), CF.getVariableNames());
-        Messages.showMessageDialog(project, message, title, Messages.getInformationIcon());
-
-        CF.resetMetrics();
-
-        clipMetrics(projectName);
     }
 
-    private void clipMetrics(String projectName) {
+    private void clipMetrics() {
         Transferable toolkit = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
 
         try {
@@ -64,18 +50,46 @@ public class Metrics {
                 for (String line : lines) {
                     CC.calculateMetrics(line);
                 }
-
-                String message = String.format("The number of lines in %s is %d%nNumber of methods: %d%n%s%n Number of" +
-                                " variables: %d%n%s",
-                        projectName, CC.getFileCount(), CC.getMethodCount(), CC.getMethodNames(),
-                        CC.getVariableCount(), CC.getVariableNames());
-                System.out.println(message);
             }
         }
         catch (UnsupportedFlavorException | IOException e) {
             System.out.println("Something went wrong");
         }
+    }
 
+    public void showMetrics(AnActionEvent event) {
+        Project project = event.getProject();
+        assert project != null;
+        //String projectName = project.getName();
+        ArrayList<Integer> CFMetrics = new ArrayList<>();
+        ArrayList<Integer> CCMetrics = new ArrayList<>();
+        int dup = 0;
+
+        fileMetrics(project);
+        clipMetrics();
+
+        CFMetrics.add(CF.getFileCount());
+        CFMetrics.add(CF.getMethodCount());
+        CFMetrics.add(CF.getVariableCount());
+
+        CCMetrics.add(CC.getFileCount());
+        CCMetrics.add(CC.getMethodCount());
+        CCMetrics.add(CC.getVariableCount());
+
+        for (int index = 0; index < CFMetrics.size(); index++) {
+            if (CFMetrics.get(index).equals(CCMetrics.get(index))) {
+                dup++;
+            }
+        }
+
+        String title = String.format("Duplicate Percentage: %d%%", (int) ((double) dup / CFMetrics.size() * 100));
+        String message = String.format("Number of: File Clip%nLines:     %d    %d%nMethods:   %d    %d%nVariables: %d    %d%n",
+                CFMetrics.get(0), CCMetrics.get(0),
+                CFMetrics.get(1), CCMetrics.get(1),
+                CFMetrics.get(2), CCMetrics.get(2));
+        Messages.showMessageDialog(project, message, title, Messages.getInformationIcon());
+
+        CF.resetMetrics();
         CC.resetMetrics();
     }
 }
