@@ -22,7 +22,8 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="MetricsWindow" secondary="true" icon="AllIcons.General.Modified" anchor="bottom"
-                    factoryClass="com.github.stonepreheim.compareme.extensions.FileMetricWindowFactory"/>
+                    factoryClass="com.github.stonepreheim.compareme.extensions.FileMetricWindowFactory"/>\
+        <applicationService serviceImplementation="com.github.stonepreheim.compareme.services.Metrics"/>
     </extensions>
 
 </idea-plugin>
