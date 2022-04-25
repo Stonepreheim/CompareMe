@@ -14,7 +14,7 @@
         </action>
         <action id="com.github.stonepreheim.compareme.actions.GetMetricsForFile"
                 class="com.github.stonepreheim.compareme.actions.GetMetricsForFile" text="Get File Metrics"
-                description="opens comparison extension with current file in scope">
+                description="Opens comparison extension with current file in scope">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="CompareFileWithEditor"/>
             <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="CompareClipboardWithSelection"/>
         </action>
@@ -23,6 +23,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="MetricsWindow" secondary="true" icon="AllIcons.General.Modified" anchor="bottom"
                     factoryClass="com.github.stonepreheim.compareme.extensions.FileMetricWindowFactory"/>
+        <applicationService serviceImplementation="com.github.stonepreheim.compareme.services.Metrics"/>
     </extensions>
 
 </idea-plugin>

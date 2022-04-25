@@ -1,4 +1,5 @@
 package com.github.stonepreheim.compareme.services;
+
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -6,20 +7,20 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
+import java.awt.*;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.Objects;
 
 public class Metrics {
-    private int lineCount = 0;
-    private ArrayList<String> methodNames = new ArrayList<>();
-    private ArrayList<String> variableNames = new ArrayList<>();
+    private final CalculateFile CF = new CalculateFile();
+    private final CalculateClip CC = new CalculateClip();
 
-    private final String[] dataTypes = {"byte", "short", "int", "long", "float", "double", "boolean", "char", "String"};
-    private final String[] memberTypes = {"private", "protected", "public", "package"};
-
-    public void startMetrics(AnActionEvent event) {
+    public void fileMetrics(AnActionEvent event) {
         Project project = event.getProject();
         assert project != null;
         String projectName = project.getName();
@@ -33,89 +34,48 @@ public class Metrics {
             String line;
 
             while ((line = br.readLine()) != null) {
-                lineCount++;
-                boolean isMethod = false, isVariable = false;
-
-                if (line.contains("//")) {
-                    continue;
-                }
-                else if (line.contains("{")) {
-                    if (line.contains("(")) {
-                        if (line.contains("class")) {
-                            continue;
-                        }
-                        else {
-                            for (String memberType : memberTypes) {
-                                if (line.contains(memberType)) {
-                                    isMethod = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                else {
-                    for (String dataType : dataTypes) {
-                        if (line.contains(dataType) && !line.contains("\"")) {
-                            isVariable = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (isMethod) {
-                    addMethodName(line);
-                }
-                else if (isVariable) {
-                    addVariableName(line);
-                }
+                CF.calculateMetrics(line);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }
+        catch (Exception e) {
+            System.out.println("Something went wrong");
         }
 
         String title = String.format("Project: %s", projectName);
         String message = String.format("The number of lines in %s is %d%nNumber of methods: %d%n%s%n Number of" +
                         " variables: %d%n%s",
-                projectName, lineCount, methodNames.size(), getMethodNames(), variableNames.size(), getVariableNames());
+                projectName, CF.getFileCount(), CF.getMethodCount(), CF.getMethodNames(),
+                CF.getVariableCount(), CF.getVariableNames());
         Messages.showMessageDialog(project, message, title, Messages.getInformationIcon());
 
-        resetMetrics();
+        CF.resetMetrics();
+
+        clipMetrics(projectName);
     }
 
-    private void addMethodName(String methodCall) {
-        methodCall = methodCall.replace("{", "");
-        methodNames.add(methodCall);
-    }
+    private void clipMetrics(String projectName) {
+        Transferable toolkit = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
 
-    private void addVariableName(String variableCall) {
-        variableCall = variableCall.replace(";", "");
-        variableNames.add(variableCall);
-    }
+        try {
+            if (toolkit != null && toolkit.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                String text = (String) toolkit.getTransferData(DataFlavor.stringFlavor);
+                String[] lines = text.split("\\R");
 
-    private String getMethodNames() {
-        StringBuilder methodName = new StringBuilder();
+                for (String line : lines) {
+                    CC.calculateMetrics(line);
+                }
 
-        for (String name : methodNames) {
-            methodName.append(name).append("\n");
+                String message = String.format("The number of lines in %s is %d%nNumber of methods: %d%n%s%n Number of" +
+                                " variables: %d%n%s",
+                        projectName, CC.getFileCount(), CC.getMethodCount(), CC.getMethodNames(),
+                        CC.getVariableCount(), CC.getVariableNames());
+                System.out.println(message);
+            }
+        }
+        catch (UnsupportedFlavorException | IOException e) {
+            System.out.println("Something went wrong");
         }
 
-        return methodName.toString();
-    }
-
-    private String getVariableNames() {
-        StringBuilder variableName = new StringBuilder();
-
-        for (int index = 1; index < variableNames.size(); index++) {
-            variableName.append(variableNames.get(index)).append("\n");
-        }
-
-        return variableName.toString();
-    }
-
-    private void resetMetrics() {
-        lineCount = 0;
-        methodNames = new ArrayList<>();
-        variableNames = new ArrayList<>();
+        CC.resetMetrics();
     }
 }

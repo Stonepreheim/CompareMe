@@ -3,3 +3,4 @@
 .qodana
 build
 src/main/java/com/github/stonepreheim/compareme/services/.DS_Store
+.DS_Store
