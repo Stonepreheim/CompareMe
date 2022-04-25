@@ -5,8 +5,14 @@ import com.intellij.openapi.wm.ToolWindow;
 import org.jdesktop.swingx.action.ActionManager;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class FileMetricWindow {
     private JPanel FileMetricWindowContent;
@@ -37,10 +43,22 @@ public class FileMetricWindow {
 
             FileSelectedLabel.setText("Selected file name: " + file.getName());
 
-            Action myAction = ActionManager.getInstance().getAction(IdeActions.ACTION_COMPARE_CLIPBOARD_WITH_SELECTION);
-//            ActionEvent e = new ActionEvent();
-//            myAction.actionPerformed(e);
-            //need to create an action event somehow to trigger the compare window with
+            Path filePath = Path.of(file.getPath());
+
+            try{
+                StringSelection selection = new StringSelection(Files.readString(filePath));
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(selection, selection);
+            }catch (IOException e){
+                System.err.println("error when opening file.");
+            }
+
+//            need to create an action event somehow to trigger the compare window with
+//            Action myAction = ActionManager.getInstance().getAction(IdeActions.ACTION_COMPARE_CLIPBOARD_WITH_SELECTION);
+//            int uniqueId = (int) System.currentTimeMillis();
+//            String commandName = "fileSelectedTrigger";
+//            ActionEvent event = new ActionEvent(file, uniqueId, commandName);
+//            myAction.actionPerformed(event);
         }
 
     }
