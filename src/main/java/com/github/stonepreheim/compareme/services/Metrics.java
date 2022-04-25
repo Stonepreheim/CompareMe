@@ -19,7 +19,7 @@ import java.util.Objects;
 
 public class Metrics {
     private final CalculateFile CF = new CalculateFile();
-    private final CalculateClip CC = new CalculateClip();
+    private final CalculateFile CC = new CalculateFile();
 
     private void fileMetrics(Project project) {
         Document currentDoc = Objects.requireNonNull(FileEditorManager.getInstance(project).getSelectedTextEditor()).getDocument();
