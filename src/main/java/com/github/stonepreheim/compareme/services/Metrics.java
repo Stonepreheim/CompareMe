@@ -83,11 +83,15 @@ public class Metrics {
         }
 
         String title = String.format("Duplicate Percentage: %d%%", (int) ((double) dup / CFMetrics.size() * 100));
-        String message = String.format("Number of: File Clip%nLines:     %d    %d%nMethods:   %d    %d%nVariables: %d    %d%n",
-                CFMetrics.get(0), CCMetrics.get(0),
-                CFMetrics.get(1), CCMetrics.get(1),
-                CFMetrics.get(2), CCMetrics.get(2));
-        Messages.showMessageDialog(project, message, title, Messages.getInformationIcon());
+//        String message = String.format("Number of: File Clip%nLines:     %d    %d%nMethods:   %d    %d%nVariables: %d    %d%n",
+//                CFMetrics.get(0), CCMetrics.get(0),
+//                CFMetrics.get(1), CCMetrics.get(1),
+//                CFMetrics.get(2), CCMetrics.get(2));
+        String message = String.format("Number of\tLines\tMethods\tVariables%nin File\t%d\t%d\t%d%nIn Clip\t%d\t%d\t%d",
+                CFMetrics.get(0), CFMetrics.get(1),CFMetrics.get(2),
+                CCMetrics.get(0), CCMetrics.get(1),CCMetrics.get(2));
+
+                Messages.showMessageDialog(project, message, title, Messages.getInformationIcon());
 
         CF.resetMetrics();
         CC.resetMetrics();
